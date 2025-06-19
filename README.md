@@ -149,3 +149,44 @@ For data-store related functions check `db.go` file.
 For quorum types check `quorum.go` file.
 
 Client uses a simple RESTful API to submit requests. GET method with URL "http://ip:port/key" will read the value of given key. POST method with URL "http://ip:port/key" and body as the value, will write the value to key.
+
+```
+./server -id 1.1 -algorithm=wpaxos &
+./server -id 1.2 -algorithm=wpaxos &
+./server -id 1.3 -algorithm=wpaxos &
+./server -id 2.1 -algorithm=wpaxos &
+./server -id 2.2 -algorithm=wpaxos &
+./server -id 2.3 -algorithm=wpaxos &
+./server -id 3.1 -algorithm=wpaxos &
+./server -id 3.2 -algorithm=wpaxos &
+./server -id 3.3 -algorithm=wpaxos &
+```
+
+```
+./client -id 1.1 -config config.json &
+./client -id 2.1 -config config.json &
+./client -id 3.1 -config config.json &
+./client -id 1.2 -config config.json &
+./client -id 2.2 -config config.json &
+```
+
+```
+./server -id 1.1 -algorithm=wpaxos &
+./server -id 1.2 -algorithm=wpaxos &
+./server -id 1.3 -algorithm=wpaxos &
+./server -id 1.4 -algorithm=wpaxos &
+./server -id 2.1 -algorithm=wpaxos &
+./server -id 2.2 -algorithm=wpaxos &
+./server -id 2.3 -algorithm=wpaxos &
+./server -id 3.1 -algorithm=wpaxos &
+./server -id 3.2 -algorithm=wpaxos &
+./server -id 3.3 -algorithm=wpaxos &
+```
+
+```
+./client -id 1.1 -config config.json &
+./client -id 2.1 -config config.json &
+./client -id 3.1 -config config.json &
+./client -id 1.2 -config config.json &
+./client -id 2.2 -config config.json &
+```
