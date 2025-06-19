@@ -154,7 +154,81 @@ func (b *Benchmark) Run() {
 	}
 
 	count := 0
-	probability := 100
+
+	b.db.Init()
+	b.startTime = time.Now()
+	if b.T > 0 {
+		timer := time.NewTimer(time.Second * time.Duration(b.T))
+	loop:
+		for {
+			select {
+			case <-timer.C:
+				fmt.Println("One minute done", count)
+				break loop
+			default:
+				b.wait.Add(1)
+				// This is for the default case where the keys are
+				// picked randomly
+				keys <- b.next()
+			}
+		}
+	} else {
+		for i := 0; i < b.N; i++ {
+			b.wait.Add(1)
+			// This is for the default case where the keys are
+			// picked randomly
+			keys <- b.next()
+		}
+		b.wait.Wait()
+	}
+	t := time.Now().Sub(b.startTime)
+
+	b.db.Stop()
+	close(keys)
+	stat := Statistic(b.latency)
+	log.Infof("Concurrency = %d", b.Concurrency)
+	log.Infof("Write Ratio = %f", b.W)
+	log.Infof("Number of Keys = %d", b.K)
+	log.Infof("Benchmark Time = %v\n", t)
+	log.Infof("Throughput = %f\n", float64(len(b.latency))/t.Seconds())
+	log.Info(stat)
+
+	stat.WriteFile("latency")
+	b.History.WriteFile("history")
+
+	if b.LinearizabilityCheck {
+		n := b.History.Linearizable()
+		if n == 0 {
+			log.Info("The execution is linearizable.")
+		} else {
+			log.Info("The execution is NOT linearizable.")
+			log.Infof("Total anomaly read operations are %d", n)
+			log.Infof("Anomaly percentage is %f", float64(n)/float64(stat.Size))
+		}
+	}
+}
+
+func (b *Benchmark) RunProb(probability int) {
+	// For now, we only focus on write requests
+	b.W = 1.0
+	var stop chan bool
+	if b.Move {
+		move := func() { b.Mu = float64(int(b.Mu+1) % b.K) }
+		stop = Schedule(move, time.Duration(b.Speed)*time.Millisecond)
+		defer close(stop)
+	}
+
+	b.latency = make([]time.Duration, 0)
+	keys := make(chan int, b.Concurrency)
+	latencies := make(chan time.Duration, 1000)
+	defer close(latencies)
+	go b.collect(latencies)
+
+	for i := 0; i < b.Concurrency; i++ {
+		go b.worker(keys, latencies)
+	}
+
+	count := 0
 
 	b.db.Init()
 	b.startTime = time.Now()

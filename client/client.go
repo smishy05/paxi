@@ -13,6 +13,7 @@ var id = flag.String("id", "", "node id this client connects to")
 var algorithm = flag.String("algorithm", "", "Client API type [paxos, chain]")
 var load = flag.Bool("load", false, "Load K keys into DB")
 var master = flag.String("master", "", "Master address.")
+var probability = flag.Int("probability", 100, "Conflict rate")
 
 // db implements Paxi.DB interface for benchmarking
 type db struct {
@@ -66,6 +67,6 @@ func main() {
 	if *load {
 		b.Load()
 	} else {
-		b.Run()
+		b.RunProb((*probability))
 	}
 }
