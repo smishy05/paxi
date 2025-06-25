@@ -150,6 +150,7 @@ For quorum types check `quorum.go` file.
 
 Client uses a simple RESTful API to submit requests. GET method with URL "http://ip:port/key" will read the value of given key. POST method with URL "http://ip:port/key" and body as the value, will write the value to key.
 
+### 9 nodes
 ```
 ./server -id 1.1 -algorithm=wpaxos &
 ./server -id 1.2 -algorithm=wpaxos &
@@ -163,6 +164,14 @@ Client uses a simple RESTful API to submit requests. GET method with URL "http:/
 ```
 
 ```
+./client -id 1.1 -config config.json -contention=80 &
+./client -id 2.1 -config config.json -contention=80 &
+./client -id 3.1 -config config.json -contention=80 &
+./client -id 1.2 -config config.json -contention=80 &
+./client -id 2.2 -config config.json -contention=80 &
+```
+
+```
 ./client -id 1.1 -config config.json &
 ./client -id 2.1 -config config.json &
 ./client -id 3.1 -config config.json &
@@ -170,6 +179,8 @@ Client uses a simple RESTful API to submit requests. GET method with URL "http:/
 ./client -id 2.2 -config config.json &
 ```
 
+
+### 10 nodes
 ```
 ./server -id 1.1 -algorithm=wpaxos &
 ./server -id 1.2 -algorithm=wpaxos &
@@ -189,4 +200,12 @@ Client uses a simple RESTful API to submit requests. GET method with URL "http:/
 ./client -id 3.1 -config config.json &
 ./client -id 1.2 -config config.json &
 ./client -id 2.2 -config config.json &
+```
+
+```
+./client -id 1.1 -config config.json -contention=80 &
+./client -id 2.1 -config config.json -contention=80 &
+./client -id 3.1 -config config.json -contention=80 &
+./client -id 1.2 -config config.json -contention=80 &
+./client -id 2.2 -config config.json -contention=80 &
 ```
