@@ -203,9 +203,41 @@ Client uses a simple RESTful API to submit requests. GET method with URL "http:/
 ```
 
 ```
+./client -id 1.1 -config config.json -contention=100 &
+./client -id 2.1 -config config.json -contention=100 &
+./client -id 3.1 -config config.json -contention=100 &
+./client -id 1.2 -config config.json -contention=100 &
+./client -id 2.2 -config config.json -contention=100 &
+```
+
+```
 ./client -id 1.1 -config config.json -contention=80 &
 ./client -id 2.1 -config config.json -contention=80 &
 ./client -id 3.1 -config config.json -contention=80 &
 ./client -id 1.2 -config config.json -contention=80 &
 ./client -id 2.2 -config config.json -contention=80 &
+```
+
+```
+./client -id 1.1 -config config.json -contention=60 &
+./client -id 2.1 -config config.json -contention=60 &
+./client -id 3.1 -config config.json -contention=60 &
+./client -id 1.2 -config config.json -contention=60 &
+./client -id 2.2 -config config.json -contention=60 &
+```
+
+```
+./client -id 1.1 -config config.json -contention=40 &
+./client -id 2.1 -config config.json -contention=40 &
+./client -id 3.1 -config config.json -contention=40 &
+./client -id 1.2 -config config.json -contention=40 &
+./client -id 2.2 -config config.json -contention=40 &
+```
+
+```
+./client -id 1.1 -config config.json -contention=20 &
+./client -id 2.1 -config config.json -contention=20 &
+./client -id 3.1 -config config.json -contention=20 &
+./client -id 1.2 -config config.json -contention=20 &
+./client -id 2.2 -config config.json -contention=20 &
 ```

@@ -51,7 +51,7 @@ type Bconfig struct {
 // DefaultBConfig returns a default benchmark config
 func DefaultBConfig() Bconfig {
 	return Bconfig{
-		T:                    60,
+		T:                    120,
 		N:                    0,
 		K:                    1000,
 		W:                    0.5,
@@ -134,8 +134,7 @@ func (b *Benchmark) Load() {
 
 // Run starts the main logic of benchmarking
 func (b *Benchmark) Run() {
-	// For now, we only focus on write requests
-	b.W = 1.0
+	b.W = 1
 	var stop chan bool
 	if b.Move {
 		move := func() { b.Mu = float64(int(b.Mu+1) % b.K) }
@@ -153,8 +152,6 @@ func (b *Benchmark) Run() {
 		go b.worker(keys, latencies)
 	}
 
-	count := 0
-
 	b.db.Init()
 	b.startTime = time.Now()
 	if b.T > 0 {
@@ -163,20 +160,15 @@ func (b *Benchmark) Run() {
 		for {
 			select {
 			case <-timer.C:
-				fmt.Println("One minute done", count)
 				break loop
 			default:
 				b.wait.Add(1)
-				// This is for the default case where the keys are
-				// picked randomly
 				keys <- b.next()
 			}
 		}
 	} else {
 		for i := 0; i < b.N; i++ {
 			b.wait.Add(1)
-			// This is for the default case where the keys are
-			// picked randomly
 			keys <- b.next()
 		}
 		b.wait.Wait()
@@ -242,22 +234,12 @@ func (b *Benchmark) RunProb(probability int) {
 				break loop
 			default:
 				b.wait.Add(1)
-				// This is for the default case where the keys are
-				// picked randomly
-				// keys <- b.next()
-				// This is where the keys are picked randomly
-				// keys <- b.same()
 				keys <- b.pickWithProbability(probability)
 			}
 		}
 	} else {
 		for i := 0; i < b.N; i++ {
 			b.wait.Add(1)
-			// This is for the default case where the keys are
-			// picked randomly
-			// keys <- b.next()
-			// This is where the keys are picked randomly
-			// keys <- b.same()
 			keys <- b.pickWithProbability(probability)
 		}
 		b.wait.Wait()
@@ -287,11 +269,6 @@ func (b *Benchmark) RunProb(probability int) {
 			log.Infof("Anomaly percentage is %f", float64(n)/float64(stat.Size))
 		}
 	}
-}
-
-// Pick the same key with all the runs
-func (b *Benchmark) same() int {
-	return (b.K / 2)
 }
 
 func (b *Benchmark) pickWithProbability(probability int) int {
